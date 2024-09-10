@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-ezrthtvBAY8H8DJ0uF5b9yAq7kxiA8KKPz8p+UqITl6OEF2M4cjo/xGJSE9CwMO8" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0; /* Remove default margin */
+            overflow: hidden; /* Prevent horizontal scrollbar */
+            display: flex; /* Use flexbox for layout */
+        }
+        #left-panel {
+            background-color: black; /* Changed to black */
+            color: #fff;
+            padding: 10px;
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full height */
+            overflow-y: auto; /* Add scrollbar if content overflows */
+            position: fixed; /* Keep the panel fixed */
+            left: 0; /* Align to the left */
+            bottom: 0; /* Align to the bottom */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+        #left-panel a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px;
+        }
+        #chat-container {
+            flex-grow: 1; /* Allow chat to grow and fill remaining space */
+            display: flex;
+            flex-direction: column;
+            margin-left: 320px; /* Add margin to accommodate the left panel */
+            margin-right: 20px; /* Add margin from the right side */
+            margin-top: 20px; /* Add margin from the top */
+        }
+        #chat-window {
+            height: calc(100vh - 180px); /* Adjust height as needed */
+            overflow-y: auto; /* Enable vertical scrolling */
+            background-color: rgba(255, 255, 255, 0.8); /* Background color with transparency */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        #input-bar {
+            position: fixed;
+            bottom: 0;
+            width: calc(100% - 340px); /* Adjust width */
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000; /* Ensure it's above other content */
+            margin-left: 320px; /* Align with the chat window */
+        }
+        #user-input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        #send-button {
+            width: 80px;
+        }
+        #bottom-bar {
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-top: 1px solid #ced4da;
+            position: fixed; /* Keep the bar fixed */
+            right: 0; /* Align to the right */
+            bottom: 80px; /* Adjust as needed */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+        #language-buttons {
+            display: flex;
+        }
+        #language-buttons button {
+            margin-right: 10px;
+        }
+        #navigation {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        #navigation a {
+            color: #000;
+            text-decoration: none;
+            padding: 5px;
+        }
+        #user-profile {
+            color: #fff;
+            padding: 10px;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+        #user-profile a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px;
+        }
+        .chat-history-section {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            text-align: center; /* Center align text */
+            background-color: #007bff; /* Blue background color */
+            color: #fff; /* White text color */
+            border-radius: 5px; /* Rounded corners */
+            margin-bottom: 10px; /* Add some bottom margin */
+        }
+        .chat-history-section:hover {
+            background-color: #0056b3; /* Darker blue color on hover */
+        }
+        .start-new-chat-btn {
+            margin-bottom: 10px; /* Add some bottom margin */
+        }
+    </style>
+</head>
+<body>
+    <div id="left-panel">
+        <button class="btn btn-primary mt-3 start-new-chat-btn" onclick="startNewChat()">Start New Chat</button>
+        <div class="chat-history-section" onclick="showChatHistory()">History</div>
+        <!-- Add more sections for different time periods as needed -->
+    </div>
+    <div class="container mt-4" id="chat-container">
+        <div id="chat-window">
+            <ul class="list-group" id="chat-messages"></ul>
+        </div>
+    </div>
+    <div id="input-bar">
+        <input type="text" class="form-control" id="user-input" placeholder="Type your message...">
+        <button type="button" class="btn btn-primary" id="send-button" onclick="sendMessage()">Send</button>
+    </div>
+    <div id="bottom-bar">
+        <div id="language-buttons">
+            <button type="button" class="btn btn-info" onclick="changeLanguage('en')">English</button>
+            <button type="button" class="btn btn-info" onclick="changeLanguage('kn')">Kannada</button>
+        </div>
+        <button type="button" class="btn btn-secondary" id="voice-assistant-button" onclick="activateVoiceAssistant()">Voice Assistant</button>
+    </div>
+    <div id="navigation">
+        <a href="/home">Home</a> |
+        <a href="/about">About</a> |
+        <a href="/services">Services</a> |
+        <a href="/contact">Contact</a>
+    </div>
+    <div id="user-profile">
+        <a href="/about">ItsMeNewUser</a> <!-- Replace "#" with the link to the user's profile -->
+    </div>
+    
+
+
+    <script>
+        var currentLanguage = 'en';
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatForm = document.getElementById('chat-form');
+            const userInput = document.getElementById('user-input');
+
+            // Add event listener for form submission (clicking send button)
+            chatForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent form submission
+                sendMessage(); // Send user message
+            });
+
+            // Add event listener for Enter key press
+            userInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent default Enter key behavior (form submission)
+                    sendMessage(); // Trigger send message function
+                }
+            });
+        });
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            appendMessage('user-message', userInput);
+
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user_message=${encodeURIComponent(userInput)}&lang=${currentLanguage}`,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const botResponse = data.bot_response;
+                    appendMessage('bot-message', botResponse);
+                    // Store user query and chatbot response in chat history
+                    storeChatHistory('User: ' + userInput);
+                    storeChatHistory('Chatbot: ' + botResponse);
+                })
+                .catch(error => console.error('Error sending message:', error));
+        }
+
+        function appendMessage(className, message) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageItem = document.createElement('li');
+            messageItem.className = 'list-group-item message ' + className;
+            messageItem.textContent = message;
+            chatMessages.appendChild(messageItem);
+
+            // Clear the user input field
+            document.getElementById('user-input').value = '';
+
+            // Scroll to the bottom of the chat container
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function changeLanguage(newLanguage) {
+            if (currentLanguage === 'en' && newLanguage === 'kn') {
+                alert('Language changed to Kannada');
+            }
+
+            currentLanguage = newLanguage;
+            // Optionally, you can update the UI to reflect the language change
+            // For example, update the text on language buttons
+
+            // Send a request to the server to change the language (optional)
+            fetch('/change_language', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `lang=${currentLanguage}`,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // No need to show alert upon successful language change
+                    } else {
+                        alert('Failed to change language on the server');
+                    }
+                })
+                .catch(error => console.error('Error changing language:', error));
+        }
+
+        function storeChatHistory(message) {
+            const chatHistory = localStorage.getItem('chatHistory') || '';
+            localStorage.setItem('chatHistory', chatHistory + '\n' + message);
+        }
+
+        function displayChatHistory() {
+            // Get chat history from local storage
+            const chatHistory = localStorage.getItem('chatHistory');
+            if (chatHistory) {
+                // Replace the default heading with a custom one
+                const customHeading = "Chat History:";
+                alert(customHeading + '\n' + chatHistory);
+            } else {
+                alert('No chat history found.');
+            }
+        }
+
+        function showChatHistory() {
+            displayChatHistory();
+        }
+
+        function startNewChat() {
+             localStorage.removeItem('chatHistory'); // Clear chat history
+             const chatMessages = document.getElementById('chat-messages');
+             chatMessages.innerHTML = ''; // Clear messages from the chat window
+             alert('New chat session started!');
+        }
+
+
+        function activateVoiceAssistant() {
+            const recognition = new webkitSpeechRecognition();
+
+            if (!recognition) {
+                alert('Speech recognition is not supported in this browser.');
+                return;
+            }
+
+            recognition.lang = currentLanguage;
+
+            recognition.onresult = function (event) {
+                const userInput = event.results[0][0].transcript;
+                appendMessage('user-message', userInput);
+
+                fetch('/send_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `user_message=${encodeURIComponent(userInput)}&lang=${currentLanguage}`,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const botResponse = data.bot_response;
+                        const newLanguage = data.current_language;
+                        if (newLanguage !== currentLanguage) {
+                            currentLanguage = newLanguage;
+                            // No need to show alert upon language change during voice recognition
+                        }
+                        appendMessage('bot-message', botResponse);
+                    })
+                    .catch(error => console.error('Error sending message:', error));
+            };
+
+            recognition.onerror = function (event) {
+                console.error('Speech recognition error:', event.error);
+                alert('Speech recognition encountered an error. Please check the console for details.');
+            };
+
+            recognition.onend = function () {
+                alert('Speech recognition ended. If the issue persists, try refreshing the page.');
+            };
+
+            recognition.start();
+        }
+    </script>
+</body>
+</html>
